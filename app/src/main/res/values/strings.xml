@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">LedgerBook</string>
+    <string name="emergency">Emergência</string>
+    <string name="bill">Contas</string>
+    <string name="transport">Transporte</string>
+    <string name="selfcare">Autocuidado</string>
+    <string name="gift">Presente</string>
+    <string name="food">Alimentação</string>
+    <string name="shopping">Compras</string>
+    <string name="pet">Pet</string>
+    <string name="education">Educação</string>
+    <string name="leisure">Lazer</string>
+    <string name="reimbursement">Reembolso</string>
+    <string name="salary">Salário</string>
+    <string name="bonus">Bônus</string>
+    <string name="remaining">RESTANTE</string>
+    <string name="income">RENDAS</string>
+    <string name="expense">DESPESAS</string>
+    <string name="saving">ECONOMIAS</string>
+</resources>
