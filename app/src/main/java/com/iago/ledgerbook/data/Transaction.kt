@@ -12,7 +12,7 @@ data class Transaction(
     val category: TransactionCategory,
     val type: TransactionType,
     val title: String,
-    val value: Double,
+    var value: Double,
 ) {
     override fun toString(): String = Uri.encode(Gson().toJson(this))
 

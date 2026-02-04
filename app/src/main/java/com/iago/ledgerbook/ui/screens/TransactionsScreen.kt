@@ -12,13 +12,22 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -26,14 +35,15 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.iago.ledgerbook.data.Saving
 import com.iago.ledgerbook.data.SummaryData
 import com.iago.ledgerbook.data.Transaction
+import com.iago.ledgerbook.data.TransactionCategory
 import com.iago.ledgerbook.data.TransactionType
+import com.iago.ledgerbook.ui.composables.BottomSheetAction
 import com.iago.ledgerbook.ui.composables.SavingCard
 import com.iago.ledgerbook.ui.composables.SummaryDisplay
+import com.iago.ledgerbook.ui.composables.TransactionBottomSheetContent
 import com.iago.ledgerbook.ui.composables.TransactionCard
-import com.iago.ledgerbook.ui.previews.PreviewDataSaving
 import com.iago.ledgerbook.ui.previews.PreviewDataTransaction
 import com.iago.ledgerbook.ui.theme.LedgerBookTheme
 import com.iago.ledgerbook.utils.DevicePreviews
@@ -50,17 +60,14 @@ fun TransactionsScreen() {
 
     val viewModel = hiltViewModel<TransactionsViewModel>()
     val transactions by viewModel.transactions.collectAsState()
-    val savings by viewModel.savings.collectAsState()
     val currentScreen = remember { mutableStateOf(TransactionType.EXPENSE) }
 
     LaunchedEffect(Unit) {
         viewModel.fetchTransactions()
-        viewModel.fetchSavings()
     }
 
     TransactionsScreenUI(
         transactions,
-        savings,
         currentScreen.value,
         addTransaction = { viewModel.addTransaction(it) },
         updateTransaction = { viewModel.updateTransaction(it) },
@@ -69,10 +76,10 @@ fun TransactionsScreen() {
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TransactionsScreenUI(
     transactions: List<Transaction>,
-    savings: List<Saving>,
     currentScreen: TransactionType,
     addTransaction: (Transaction) -> Unit,
     updateTransaction: (Transaction) -> Unit,
@@ -80,45 +87,84 @@ fun TransactionsScreenUI(
     onChangeTransactionType: (TransactionType) -> Unit
 ) {
     val filteredTransactions = transactions.filter { it.type == currentScreen }
-    val summaryData = getSummaryData(transactions, savings)
+    val summaryData = getSummaryData(transactions)
+    var showBottomSheet by remember { mutableStateOf(BottomSheetAction.CLOSE) }
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    var editItem = remember { mutableStateOf<Transaction?>(null) }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(15.dp)
-    ) {
-        SummaryDisplay(summaryData, currentScreen) { transactionType ->
-            onChangeTransactionType(transactionType)
+    Scaffold(
+        floatingActionButton = {
+            FloatingActionButton(
+                containerColor = MaterialTheme.colorScheme.primary,
+                onClick = { showBottomSheet = BottomSheetAction.CREATE }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = ""
+                )
+            }
         }
-        Spacer(Modifier.height(15.dp))
-
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(if (currentScreen == TransactionType.SAVING) 2 else 1),
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            contentPadding = PaddingValues(12.dp)
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(15.dp)
         ) {
-            when (currentScreen) {
-                TransactionType.INCOME,
-                TransactionType.EXPENSE -> {
-                    items(filteredTransactions) { transaction ->
-                        TransactionCard(transaction)
-                    }
-                }
+            SummaryDisplay(summaryData, currentScreen) { transactionType ->
+                onChangeTransactionType(transactionType)
+            }
+            Spacer(Modifier.height(15.dp))
 
-                TransactionType.SAVING -> {
-                    items(savings) { saving ->
-                        SavingCard(saving)
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(if (currentScreen == TransactionType.SAVING) 2 else 1),
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                contentPadding = PaddingValues(12.dp)
+            ) {
+                when (currentScreen) {
+                    TransactionType.INCOME,
+                    TransactionType.EXPENSE -> {
+                        items(filteredTransactions) { transaction ->
+                            TransactionCard(transaction) {
+                                showBottomSheet = BottomSheetAction.EDIT
+                                editItem.value = transaction
+                            }
+                        }
+                    }
+
+                    TransactionType.SAVING -> {
+                        items(filteredTransactions) { saving ->
+                            SavingCard(saving) {
+                                showBottomSheet = BottomSheetAction.EDIT
+                                editItem.value = saving
+                            }
+                        }
                     }
                 }
             }
         }
+    }
 
+    if (showBottomSheet != BottomSheetAction.CLOSE) {
+        ModalBottomSheet(
+            onDismissRequest = { showBottomSheet = BottomSheetAction.CLOSE },
+            sheetState = sheetState
+        ) {
+            TransactionBottomSheetContent(
+                currentScreen,
+                isEditing = showBottomSheet == BottomSheetAction.EDIT,
+                amount = editItem.value?.value,
+                description = editItem.value?.title ?: "",
+                selectedCategory = editItem.value?.category,
+                onSubmit = { value: Double, category: TransactionCategory, title: String -> }
+            )
+        }
     }
 }
 
-fun getSummaryData(transactions: List<Transaction>, savings: List<Saving>): SummaryData {
+fun getSummaryData(transactions: List<Transaction>): SummaryData {
     var totalIncome = 0.0
     var totalExpense = 0.0
     var totalSaving = 0.0
@@ -127,12 +173,8 @@ fun getSummaryData(transactions: List<Transaction>, savings: List<Saving>): Summ
         when (transaction.type) {
             TransactionType.INCOME -> totalIncome += transaction.value
             TransactionType.EXPENSE -> totalExpense += transaction.value
-            TransactionType.SAVING -> {}
+            TransactionType.SAVING -> totalSaving += transaction.value
         }
-    }
-
-    savings.forEach { saving ->
-        totalSaving += saving.value
     }
 
     return SummaryData(
@@ -150,7 +192,6 @@ fun PotsPreview() {
         Scaffold {
             TransactionsScreenUI(
                 PreviewDataTransaction.transactionList,
-                PreviewDataSaving.savingList,
                 TransactionType.SAVING,
                 {},
                 {},

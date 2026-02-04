@@ -3,7 +3,6 @@ package com.iago.ledgerbook.di
 import android.content.Context
 import androidx.room.Room
 import com.iago.ledgerbook.data.AppDatabase
-import com.iago.ledgerbook.data.SavingDao
 import com.iago.ledgerbook.data.TransactionDao
 import dagger.Module
 import dagger.Provides
@@ -29,10 +28,5 @@ class AppModule {
     @Provides
     fun provideTransactionDao(appDatabase: AppDatabase): TransactionDao =
         appDatabase.transactionDao()
-
-    @Singleton
-    @Provides
-    fun provideSavingDao(appDatabase: AppDatabase): SavingDao =
-        appDatabase.savingDao()
 }
 

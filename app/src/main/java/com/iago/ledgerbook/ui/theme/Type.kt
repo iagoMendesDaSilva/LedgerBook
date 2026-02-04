@@ -23,6 +23,10 @@ val Typography = Typography(
     ),
     displaySmall = TextStyle(
         fontSize =25.sp,
+        fontWeight = FontWeight.Medium
+    ),
+    displayMedium = TextStyle(
+        fontSize =30.sp,
         fontWeight = FontWeight.Bold
     ),
 )

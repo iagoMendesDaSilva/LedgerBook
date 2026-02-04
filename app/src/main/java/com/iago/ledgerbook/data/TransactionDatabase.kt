@@ -6,12 +6,11 @@ import androidx.room.TypeConverters
 import com.iago.ledgerbook.utils.Converters
 
 @Database(
-    entities = [Transaction::class, Saving::class],
+    entities = [Transaction::class],
     version = 1,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun transactionDao(): TransactionDao
-    abstract fun savingDao(): SavingDao
 }

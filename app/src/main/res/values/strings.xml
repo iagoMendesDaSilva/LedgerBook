@@ -17,4 +17,18 @@
     <string name="income">RENDAS</string>
     <string name="expense">DESPESAS</string>
     <string name="saving">ECONOMIAS</string>
+    <string name="saving_per_month_suffix">/mês</string>
+    <string name="trip">Viagem</string>
+    <string name="house">Casa</string>
+    <string name="retirement">Aposentadoria</string>
+    <string name="automobile">Automóvel</string>
+    <string name="wedding">Casamento</string>
+    <string name="children">Filhos</string>
+    <string name="party">Festa</string>
+    <string name="amount">Valor</string>
+    <string name="description">Descrição</string>
+    <string name="category">CATEGORIA</string>
+    <string name="edit_type">Editar %1$s</string>
+    <string name="add_type">Adicionar %1$s</string>
+
 </resources>

@@ -21,8 +21,17 @@ object PreviewDataTransaction {
         type = TransactionType.INCOME
     )
 
+    val transactionSaving = Transaction(
+        id = 3,
+        category = TransactionCategory.TRANSPORT,
+        title = "Carro Novo",
+        value = 250.0,
+        type = TransactionType.SAVING
+    )
+
     val transactionList = listOf(
         transactionIncome,
         transactionExpense,
+        transactionSaving,
     )
 }
