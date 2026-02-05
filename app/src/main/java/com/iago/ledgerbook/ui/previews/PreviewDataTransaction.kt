@@ -7,8 +7,8 @@ import com.iago.ledgerbook.data.TransactionType
 object PreviewDataTransaction {
     val transactionExpense = Transaction(
         id = 1,
-        category = TransactionCategory.TRANSPORT,
-        title = "Gasolina",
+        category = TransactionCategory.CHILDREN,
+        title = "Fraldas",
         value = 159.99,
         type = TransactionType.EXPENSE
     )

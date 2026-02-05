@@ -2,6 +2,7 @@ package com.iago.ledgerbook.ui.composables
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -37,8 +38,7 @@ import com.iago.ledgerbook.ui.theme.LedgerBookTheme
 @Composable
 fun SavingCard(
     transaction: Transaction,
-    onPress: () -> Unit
-) {
+    onLongPress: () -> Unit,onPress: () -> Unit) {
 
     Column(
         modifier = Modifier
@@ -49,9 +49,14 @@ fun SavingCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .aspectRatio(0.7f)
-                .clickable {
-                    onPress()
-                },
+                .combinedClickable(
+                    onClick = {
+                        onPress()
+                    },
+                    onLongClick = {
+                        onLongPress()
+                    }
+                ),
             shape = RoundedCornerShape(
                 topStart = MaterialTheme.shapes.medium.topStart,
                 bottomStart = MaterialTheme.shapes.medium.topStart,
@@ -136,7 +141,8 @@ fun SavingCardPreview() {
     LedgerBookTheme {
         Surface {
             SavingCard(
-                PreviewDataTransaction.transactionSaving
+                PreviewDataTransaction.transactionSaving,
+                onLongPress={}
             ) {}
         }
     }

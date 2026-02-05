@@ -41,8 +41,8 @@ fun SummaryDisplay(
     onChangeTransactionType: (TransactionType) -> Unit
 ) {
     val remaining = summaryData.incomes - (summaryData.expenses + summaryData.savings)
-    val formattedRemaining = String.format(Locale.getDefault(), "%,.2f", remaining)
-    val (mainValue, decimals) = formattedRemaining.split(".")
+    val formattedRemaining = String.format( Locale("pt", "BR"), "%,.2f", remaining)
+    val (mainValue, decimals) = formattedRemaining.split(",")
 
     Card(
         shape = MaterialTheme.shapes.extraLarge,
@@ -95,7 +95,7 @@ fun SummaryDisplay(
                             text = ",$decimals",
                             style = MaterialTheme.typography.headlineSmall,
                             color = Color.Gray,
-                            modifier = Modifier.padding(start = 4.dp, bottom = 6.dp)
+                            modifier = Modifier.padding(start = 4.dp,)
                         )
                     }
                 }
@@ -168,7 +168,7 @@ private fun SummaryItem(
         Text(
             text = "R$${
                 String.format(
-                    Locale.getDefault(), "%,.2f", when (transactionType) {
+                    Locale("pt", "BR"), "%,.2f", when (transactionType) {
                         TransactionType.EXPENSE -> summaryData.expenses
                         TransactionType.INCOME -> summaryData.incomes
                         TransactionType.SAVING -> summaryData.savings

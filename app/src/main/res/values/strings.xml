@@ -30,5 +30,9 @@
     <string name="category">CATEGORIA</string>
     <string name="edit_type">Editar %1$s</string>
     <string name="add_type">Adicionar %1$s</string>
+    <string name="delete_confirmation_title">Deletar Item</string>
+    <string name="delete_confirmation_desc">Tem certeza de que deseja excluir "%1$s"?</string>
+    <string name="delete">Deletar</string>
+    <string name="cancel">Cancelar</string>
 
 </resources>

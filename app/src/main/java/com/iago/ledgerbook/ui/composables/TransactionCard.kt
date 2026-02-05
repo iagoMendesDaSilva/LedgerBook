@@ -2,6 +2,7 @@ package com.iago.ledgerbook.ui.composables
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -32,16 +33,21 @@ import com.iago.ledgerbook.ui.theme.LedgerBookTheme
 import com.iago.ledgerbook.ui.theme.Red
 
 @Composable
-fun TransactionCard(transaction: Transaction, onPress: () -> Unit) {
+fun TransactionCard(transaction: Transaction, onLongPress: () -> Unit,onPress: () -> Unit) {
     val formattedValue = String.format("%.2f", transaction.value)
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .height(90.dp)
-            .clickable {
-                onPress()
-            },
+            .combinedClickable(
+                onClick = {
+                    onPress()
+                },
+                onLongClick = {
+                    onLongPress()
+                }
+            ),
         shape = MaterialTheme.shapes.large,
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
@@ -113,6 +119,7 @@ fun TransactionCardIncomePreview() {
         Surface {
             TransactionCard(
                 transaction = PreviewDataTransaction.transactionExpense,
+                onLongPress = {}
             ) {}
         }
     }
@@ -125,6 +132,7 @@ fun TransactionCardExpensePreview() {
         Surface {
             TransactionCard(
                 transaction = PreviewDataTransaction.transactionIncome,
+                onLongPress = {}
             ) {}
         }
     }

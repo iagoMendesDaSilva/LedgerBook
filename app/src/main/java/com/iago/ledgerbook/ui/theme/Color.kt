@@ -20,7 +20,7 @@ val Cyan = Color(0xFF00ACC1)
 
 val Green = Color(0xFF43A047)
 val LightGreen = Color(0xFF7CB342)
-val Lime = Color(0xFFC0CA33)
+val MintGreen = Color(0xFFA5D6A7)
 
 val Yellow = Color(0xFFFDD601)
 val LightYellow = Color(0xFFFFE241)
@@ -29,4 +29,3 @@ val DarkOrange = Color(0xFFF57447)
 
 val Brown = Color(0xFF6D4C41)
 val Grey = Color(0xFFB8B8B8)
-val BlueGrey = Color(0xFF546E7A)

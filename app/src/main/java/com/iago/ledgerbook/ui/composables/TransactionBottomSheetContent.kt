@@ -5,16 +5,18 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -30,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -38,9 +41,8 @@ import com.iago.ledgerbook.data.TransactionCategory
 import com.iago.ledgerbook.data.TransactionType
 import com.iago.ledgerbook.ui.theme.LedgerBookTheme
 import com.iago.ledgerbook.ui.theme.Red
-import java.util.Locale
 
-enum class BottomSheetAction{
+enum class BottomSheetAction {
     EDIT,
     CREATE,
     CLOSE
@@ -58,7 +60,7 @@ fun TransactionBottomSheetContent(
 
     val title = remember { mutableStateOf(description) }
     val value = remember { mutableStateOf(amount) }
-    val valueText = remember { mutableStateOf(amount?.toString() ?: "") }
+    val moneyText = remember { mutableStateOf("") }
     val category = remember { mutableStateOf(selectedCategory) }
 
     val typeName = type.name
@@ -67,49 +69,68 @@ fun TransactionBottomSheetContent(
 
     Column(
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxWidth()
             .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
-        TextField(
-            value = if (valueText.value.isNullOrEmpty()) valueText.value else "R$${
-                String.format(
-                    Locale.getDefault(), "%,.2f", value.value
-                )
-            }",
-            onValueChange = {
-                value.value = it.replace(",", ".").toDoubleOrNull() ?: 0.0
-                valueText.value = it
-            },
-            placeholder = {
-                Text(
-                    text = "R$ 0,00",
-                    style = MaterialTheme.typography.displayMedium,
-                    color = Color.White,
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center
-                )
-            },
-            textStyle = MaterialTheme.typography.displayMedium.copy(
-                textAlign = TextAlign.Center
-            ),
-            modifier = Modifier.fillMaxWidth(),
-            colors = TextFieldDefaults.colors(
-                focusedTextColor = Color.White,
-                unfocusedTextColor = Color.White,
-                unfocusedContainerColor = Color.Transparent,
-                focusedContainerColor = Color.Transparent,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-                disabledIndicatorColor = Color.Transparent
-            ),
-            singleLine = true
-        )
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                "R$",
+                style = MaterialTheme.typography.displayMedium,
+                textAlign = TextAlign.End,
+                modifier = Modifier.weight(1.5f)
+            )
+            TextField(
+                value = moneyText.value,
+                onValueChange = { input ->
+                    val filtered = input.filter { it.isDigit() || it == ',' || it == '.' }
+                    val normalized = filtered.replace(",", ".")
+                    val parts = normalized.split(".")
 
+                    val result = when (parts.size) {
+                        1 -> {
+                            parts[0].take(6)
+                        }
 
+                        2 -> {
+                            val integer = parts[0].take(6)
+                            val decimals = parts[1].take(2)
+                            "$integer.$decimals"
+                        }
+
+                        else -> moneyText.value
+                    }
+
+                    moneyText.value = result
+                    value.value = result.toDoubleOrNull()
+                },
+                placeholder = {
+                    Text(
+                        "0,00",
+                        style = MaterialTheme.typography.displayMedium,
+                        textAlign = TextAlign.Start,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                },
+                textStyle = MaterialTheme.typography.displayMedium.copy(
+                    textAlign = TextAlign.Start
+                ),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Decimal
+                ),
+                singleLine = true,
+                modifier = Modifier.weight(2f),
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent
+                )
+            )
+        }
         TextField(
-            value = description,
+            value = title.value,
             onValueChange = { title.value = it },
             placeholder = { Text(stringResource(R.string.description)) },
             modifier = Modifier.fillMaxWidth(),
@@ -123,7 +144,6 @@ fun TransactionBottomSheetContent(
             ),
             singleLine = true
         )
-
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Text(
                 text = stringResource(R.string.category),
@@ -135,7 +155,7 @@ fun TransactionBottomSheetContent(
                 items(TransactionCategory.entries.toTypedArray()) { categoryItem ->
                     CategoryItem(
                         category = categoryItem,
-                        selected = selectedCategory,
+                        selected = category.value,
                         onClick = { category.value = categoryItem }
                     )
                 }
@@ -153,7 +173,6 @@ fun TransactionBottomSheetContent(
             shape = CircleShape,
             colors = ButtonDefaults.buttonColors(contentColor = MaterialTheme.colorScheme.background)
         ) {
-
             Text(
                 if (isEditing) stringResource(
                     R.string.edit_type,
@@ -210,7 +229,7 @@ fun TransactionBottomSheetPreview() {
                 val amount = remember { mutableStateOf(150.0) }
                 val description = remember { mutableStateOf("") }
                 val category =
-                    remember { mutableStateOf<TransactionCategory?>(TransactionCategory.TRANSPORT) }
+                    remember { mutableStateOf<TransactionCategory?>(TransactionCategory.HOUSE) }
 
                 TransactionBottomSheetContent(
                     type = TransactionType.EXPENSE,
