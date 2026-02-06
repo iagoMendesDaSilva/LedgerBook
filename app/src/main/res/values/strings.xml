@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Ledger Book</string>
+    <string name="app_name" translatable="false">Ledger Pad</string>
     <string name="emergency">Emergency</string>
     <string name="bill">Bills</string>
     <string name="transport">Transport</string>

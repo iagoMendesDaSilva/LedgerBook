@@ -200,6 +200,9 @@ fun TransactionsScreenUI(
                                 onLongPress = { deleteItem.value = saving }) {
                                 showBottomSheet = BottomSheetAction.EDIT
                                 editItem.value = saving
+                                scope.launch {
+                                    sheetState.bottomSheetState.expand()
+                                }
                             }
                         }
                     }
@@ -337,7 +340,7 @@ fun PotsPreview() {
         Scaffold {
             TransactionsScreenUI(
                 PreviewDataTransaction.transactionList,
-                TransactionType.EXPENSE,
+                TransactionType.SAVING,
                 {},
                 {},
                 {},

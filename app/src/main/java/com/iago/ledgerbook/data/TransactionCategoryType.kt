@@ -15,7 +15,7 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LocalHospital
 import androidx.compose.material.icons.filled.Movie
 import androidx.compose.material.icons.filled.Pets
-import androidx.compose.material.icons.filled.ReceiptLong
+import androidx.compose.material.icons.filled.Receipt
 import androidx.compose.material.icons.filled.Restaurant
 import androidx.compose.material.icons.filled.School
 import androidx.compose.material.icons.filled.ShoppingBag
@@ -59,7 +59,7 @@ enum class TransactionCategory(
     ),
     BILLS(
         R.string.bill,
-        Icons.Default.ReceiptLong,
+        Icons.Default.Receipt,
         Cyan
     ),
     HEALTH(

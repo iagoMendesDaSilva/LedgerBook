@@ -1,5 +1,4 @@
 <resources>
-    <string name="app_name">Ledger Book</string>
     <string name="emergency">Emergência</string>
     <string name="bill">Contas</string>
     <string name="transport">Transporte</string>

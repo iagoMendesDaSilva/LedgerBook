@@ -60,7 +60,7 @@ fun TransactionBottomSheetContent(
 
     val title = remember { mutableStateOf(description) }
     val value = remember { mutableStateOf(amount) }
-    val moneyText = remember { mutableStateOf("") }
+    val moneyText = remember { mutableStateOf(amount?.let { String.format("%.2f", it).replace(".", ",") } ?: "") }
     val category = remember { mutableStateOf(selectedCategory) }
 
     val typeName = type.name
