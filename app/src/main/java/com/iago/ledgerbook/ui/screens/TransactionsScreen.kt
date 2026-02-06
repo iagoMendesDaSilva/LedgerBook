@@ -152,6 +152,24 @@ fun TransactionsScreenUI(
             }
             Spacer(Modifier.height(15.dp))
 
+            if (filteredTransactions.isEmpty())
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(top = 40.dp),
+                    contentAlignment = androidx.compose.ui.Alignment.Center
+                ) {
+                    Text(
+                        text = when (currentScreen) {
+                            TransactionType.INCOME -> stringResource(R.string.empty_income)
+                            TransactionType.EXPENSE -> stringResource(R.string.empty_expense)
+                            TransactionType.SAVING -> stringResource(R.string.empty_saving)
+                        },
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            else
             LazyVerticalGrid(
                 columns = GridCells.Fixed(if (currentScreen == TransactionType.SAVING) 2 else 1),
                 modifier = Modifier.fillMaxSize(),
