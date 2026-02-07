@@ -36,4 +36,7 @@
     <string name="empty_income">Nenhuma renda</string>
     <string name="empty_expense">Nenhuma despesa</string>
     <string name="empty_saving">Nenhuma economia</string>
+    <string name="health">Saúde</string>
+    <string name="income_spent">GASTOS</string>
+    <string name="income_saved">POUPADO</string>
 </resources>

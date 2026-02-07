@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -39,6 +40,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -51,8 +53,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.iago.ledgerbook.R
 import com.iago.ledgerbook.data.SummaryData
 import com.iago.ledgerbook.data.Transaction
+import com.iago.ledgerbook.data.TransactionCategory
 import com.iago.ledgerbook.data.TransactionType
 import com.iago.ledgerbook.ui.composables.BottomSheetAction
+import com.iago.ledgerbook.ui.composables.CategoryLegend
+import com.iago.ledgerbook.ui.composables.CategoryPieChart
 import com.iago.ledgerbook.ui.composables.SavingCard
 import com.iago.ledgerbook.ui.composables.SummaryDisplay
 import com.iago.ledgerbook.ui.composables.TransactionBottomSheetContent
@@ -114,6 +119,10 @@ fun TransactionsScreenUI(
     var editItem = remember { mutableStateOf<Transaction?>(null) }
     var deleteItem = remember { mutableStateOf<Transaction?>(null) }
 
+    val categoryData = remember(transactions, currentScreen) {
+        categoryTotals(transactions, currentScreen)
+    }
+
     BackHandler(enabled = showBottomSheet != BottomSheetAction.CLOSE) {
         scope.launch {
             sheetState.bottomSheetState.hide()
@@ -150,6 +159,12 @@ fun TransactionsScreenUI(
             SummaryDisplay(summaryData, currentScreen) { transactionType ->
                 onChangeTransactionType(transactionType)
             }
+            if (categoryData.isNotEmpty()) {
+                Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                    CategoryPieChart(categoryData)
+                    CategoryLegend(categoryData)
+                }
+            }
             Spacer(Modifier.height(15.dp))
 
             if (filteredTransactions.isEmpty())
@@ -157,7 +172,7 @@ fun TransactionsScreenUI(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(top = 40.dp),
-                    contentAlignment = androidx.compose.ui.Alignment.Center
+                    contentAlignment = Alignment.Center
                 ) {
                     Text(
                         text = when (currentScreen) {
@@ -170,44 +185,44 @@ fun TransactionsScreenUI(
                     )
                 }
             else
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(if (currentScreen == TransactionType.SAVING) 2 else 1),
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                contentPadding = PaddingValues(12.dp)
-            ) {
-                when (currentScreen) {
-                    TransactionType.INCOME,
-                    TransactionType.EXPENSE -> {
-                        items(filteredTransactions) { transaction ->
-                            TransactionCard(
-                                transaction,
-                                onLongPress = { deleteItem.value = transaction }) {
-                                showBottomSheet = BottomSheetAction.EDIT
-                                editItem.value = transaction
-                                scope.launch {
-                                    sheetState.bottomSheetState.expand()
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(if (currentScreen == TransactionType.SAVING) 2 else 1),
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    contentPadding = PaddingValues(12.dp)
+                ) {
+                    when (currentScreen) {
+                        TransactionType.INCOME,
+                        TransactionType.EXPENSE -> {
+                            items(filteredTransactions) { transaction ->
+                                TransactionCard(
+                                    transaction,
+                                    onLongPress = { deleteItem.value = transaction }) {
+                                    showBottomSheet = BottomSheetAction.EDIT
+                                    editItem.value = transaction
+                                    scope.launch {
+                                        sheetState.bottomSheetState.expand()
+                                    }
                                 }
                             }
                         }
-                    }
 
-                    TransactionType.SAVING -> {
-                        items(filteredTransactions) { saving ->
-                            SavingCard(
-                                saving,
-                                onLongPress = { deleteItem.value = saving }) {
-                                showBottomSheet = BottomSheetAction.EDIT
-                                editItem.value = saving
-                                scope.launch {
-                                    sheetState.bottomSheetState.expand()
+                        TransactionType.SAVING -> {
+                            items(filteredTransactions) { saving ->
+                                SavingCard(
+                                    saving,
+                                    onLongPress = { deleteItem.value = saving }) {
+                                    showBottomSheet = BottomSheetAction.EDIT
+                                    editItem.value = saving
+                                    scope.launch {
+                                        sheetState.bottomSheetState.expand()
+                                    }
                                 }
                             }
                         }
                     }
                 }
-            }
         }
     }
 
@@ -310,6 +325,16 @@ fun TransactionsScreenUI(
         )
     }
 
+}
+
+fun categoryTotals(
+    transactions: List<Transaction>,
+    type: TransactionType
+): Map<TransactionCategory, Double> {
+    return transactions
+        .filter { it.type == type }
+        .groupBy { it.category }
+        .mapValues { it.value.sumOf { tx -> tx.value } }
 }
 
 fun getSummaryData(transactions: List<Transaction>): SummaryData {

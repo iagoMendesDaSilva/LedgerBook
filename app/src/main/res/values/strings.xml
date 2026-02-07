@@ -37,5 +37,8 @@
     <string name="empty_income">No income</string>
     <string name="empty_expense">No expenses</string>
     <string name="empty_saving">No savings</string>
+    <string name="health">Health</string>
+    <string name="income_spent">SPENT</string>
+    <string name="income_saved">SAVED</string>
 
 </resources>

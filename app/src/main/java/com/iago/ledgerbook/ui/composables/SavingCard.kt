@@ -27,6 +27,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -34,6 +35,7 @@ import com.iago.ledgerbook.R
 import com.iago.ledgerbook.data.Transaction
 import com.iago.ledgerbook.ui.previews.PreviewDataTransaction
 import com.iago.ledgerbook.ui.theme.LedgerBookTheme
+import java.util.Locale
 
 @Composable
 fun SavingCard(
@@ -92,6 +94,8 @@ fun SavingCard(
         }
         Column(Modifier.padding(top = 16.dp)) {
             Text(
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
                 text = transaction.title,
                 style = MaterialTheme.typography.displaySmall,
                 color = Color.White
@@ -102,6 +106,7 @@ fun SavingCard(
                     append(
                         "+R$ ${
                             String.format(
+                                Locale("pt", "BR"),
                                 "%,.2f",
                                 transaction.value
                             )

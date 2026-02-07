@@ -1,11 +1,14 @@
 package com.iago.ledgerbook.ui.composables
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -22,12 +25,14 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.iago.ledgerbook.R
 import com.iago.ledgerbook.data.SummaryData
 import com.iago.ledgerbook.data.TransactionType
+import com.iago.ledgerbook.ui.theme.Blue
 import com.iago.ledgerbook.ui.theme.DarkBackground
 import com.iago.ledgerbook.ui.theme.DarkTurquoise
 import com.iago.ledgerbook.ui.theme.LedgerBookTheme
@@ -41,8 +46,13 @@ fun SummaryDisplay(
     onChangeTransactionType: (TransactionType) -> Unit
 ) {
     val remaining = summaryData.incomes - (summaryData.expenses + summaryData.savings)
-    val formattedRemaining = String.format( Locale("pt", "BR"), "%,.2f", remaining)
+    val formattedRemaining = String.format(Locale("pt", "BR"), "%,.2f", remaining)
     val (mainValue, decimals) = formattedRemaining.split(",")
+
+    val expensePercentage =
+        if (summaryData.incomes > 0) (summaryData.expenses / summaryData.incomes * 100) else 0.0
+    val savingPercentage =
+        if (summaryData.incomes > 0) (summaryData.savings / summaryData.incomes * 100) else 0.0
 
     Card(
         shape = MaterialTheme.shapes.extraLarge,
@@ -68,46 +78,92 @@ fun SummaryDisplay(
                 .padding(24.dp)
         ) {
             Column {
-
-                Column(
-                    Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .height(IntrinsicSize.Max),
+                    verticalAlignment = Alignment.Bottom
                 ) {
-                    Text(
-                        text = stringResource(R.string.remaining),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = Color.Gray,
-                        letterSpacing = 2.sp
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    Row(
-                        verticalAlignment = Alignment.Bottom
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxHeight(),
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            text = "R$$mainValue",
-                            style = MaterialTheme.typography.displayMedium,
-                            color = Color.White
+                            text = stringResource(R.string.income_spent),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = Color.Gray,
+                            letterSpacing = 2.sp,
                         )
+
+                        Spacer(modifier = Modifier.weight(1f))
 
                         Text(
-                            text = ",$decimals",
-                            style = MaterialTheme.typography.headlineSmall,
-                            color = Color.Gray,
-                            modifier = Modifier.padding(start = 4.dp,)
+                            text = "${expensePercentage.toInt()}%",
+                            style = MaterialTheme.typography.labelLarge,
+                            color = Red,
+                            textAlign = TextAlign.Center
                         )
+                        Spacer(modifier = Modifier.weight(1f))
+
+                    }
+
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = stringResource(R.string.remaining),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = Color.Gray,
+                            letterSpacing = 2.sp,
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Row(
+                            verticalAlignment = Alignment.Bottom
+                        ) {
+                            Text(
+                                text = "R$$mainValue",
+                                style = MaterialTheme.typography.displayMedium,
+                                color = Color.White
+                            )
+
+                            Text(
+                                text = ",$decimals",
+                                style = MaterialTheme.typography.headlineSmall,
+                                color = Color.Gray,
+                                modifier = Modifier.padding(start = 4.dp)
+                            )
+                        }
+                    }
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxHeight(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = stringResource(R.string.income_saved),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = Color.Gray,
+                            letterSpacing = 2.sp,
+                        )
+
+                        Spacer(modifier = Modifier.weight(1f))
+
+                        Text(
+                            text = "${savingPercentage.toInt()}%",
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.primary,
+                            textAlign = TextAlign.Center
+                        )
+                        Spacer(modifier = Modifier.weight(1f))
+
                     }
                 }
-
                 Spacer(modifier = Modifier.height(24.dp))
-
-                Divider(
-                    color = Color.White.copy(alpha = 0.1f)
-                )
-
+                Divider(color = Color.White.copy(alpha = 0.1f))
                 Spacer(modifier = Modifier.height(16.dp))
-
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
@@ -147,7 +203,15 @@ private fun SummaryItem(
     onPress: () -> Unit
 ) {
     Column(
-        modifier = Modifier.clickable { onPress() },
+        modifier = Modifier
+            .clickable { onPress() }
+            .background(
+                if (currentTransactionType == transactionType) MaterialTheme.colorScheme.primary.copy(
+                    .15f
+                ) else Color.Transparent,
+                MaterialTheme.shapes.medium
+            )
+            .padding(vertical = 12.dp, horizontal = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
@@ -175,11 +239,8 @@ private fun SummaryItem(
                     }
                 )
             }",
-            style = MaterialTheme.typography.titleMedium,
-            color = if (currentTransactionType == transactionType) {
-                if (transactionType == TransactionType.EXPENSE) Color.Red
-                else MaterialTheme.colorScheme.primary
-            } else Color.White
+            style = MaterialTheme.typography.bodyLarge,
+            color = Color.White
         )
     }
 }

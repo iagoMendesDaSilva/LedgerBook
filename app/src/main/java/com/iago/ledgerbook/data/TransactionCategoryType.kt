@@ -63,7 +63,7 @@ enum class TransactionCategory(
         Cyan
     ),
     HEALTH(
-        R.string.emergency,
+        R.string.health,
         Icons.Default.LocalHospital,
         Red
     ),
@@ -99,8 +99,6 @@ enum class TransactionCategory(
         Icons.Default.Cake,
         LightYellow
     ),
-
-
     PET(
         R.string.pet,
         Icons.Default.Pets,

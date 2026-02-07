@@ -16,13 +16,17 @@ val Typography = Typography(
         fontSize = 13.sp,
         fontWeight = FontWeight.Normal
     ),
+    bodyLarge = TextStyle(
+        fontSize = 13.sp,
+        fontWeight = FontWeight.SemiBold
+    ),
 
     labelLarge = TextStyle(
         fontSize = 18.sp,
         fontWeight = FontWeight.Bold
     ),
     displaySmall = TextStyle(
-        fontSize =25.sp,
+        fontSize =20.sp,
         fontWeight = FontWeight.Medium
     ),
     displayMedium = TextStyle(
