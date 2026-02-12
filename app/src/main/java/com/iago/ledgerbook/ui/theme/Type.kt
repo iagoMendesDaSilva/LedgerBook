@@ -17,7 +17,7 @@ val Typography = Typography(
         fontWeight = FontWeight.Normal
     ),
     bodyLarge = TextStyle(
-        fontSize = 13.sp,
+        fontSize = 12.sp,
         fontWeight = FontWeight.SemiBold
     ),
 

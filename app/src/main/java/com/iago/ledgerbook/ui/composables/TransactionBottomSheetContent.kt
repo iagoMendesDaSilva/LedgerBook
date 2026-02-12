@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -41,7 +40,6 @@ import com.iago.ledgerbook.R
 import com.iago.ledgerbook.data.TransactionCategory
 import com.iago.ledgerbook.data.TransactionType
 import com.iago.ledgerbook.ui.theme.LedgerBookTheme
-import com.iago.ledgerbook.ui.theme.Red
 
 enum class BottomSheetAction {
     EDIT,
@@ -61,12 +59,18 @@ fun TransactionBottomSheetContent(
 
     val title = remember { mutableStateOf(description) }
     val value = remember { mutableStateOf(amount) }
-    val moneyText = remember { mutableStateOf(amount?.let { String.format("%.2f", it).replace(".", ",") } ?: "") }
+    val moneyText = remember {
+        mutableStateOf(amount?.let { String.format("%.2f", it).replace(".", ",") } ?: "")
+    }
     val category = remember { mutableStateOf(selectedCategory) }
 
-    val typeName = type.name
-        .lowercase()
-        .replaceFirstChar { it.uppercase() }
+    val typeName = stringResource(
+        when (type) {
+            TransactionType.EXPENSE -> R.string.expense
+            TransactionType.INCOME -> R.string.income
+            TransactionType.SAVING -> R.string.saving
+        }
+    ).lowercase().replaceFirstChar { it.uppercase() }
 
     Column(
         modifier = Modifier
@@ -181,7 +185,9 @@ fun TransactionBottomSheetContent(
                 if (isEditing) stringResource(
                     R.string.edit_type,
                     typeName
-                ) else stringResource(R.string.add_type, typeName)
+                ) else stringResource(
+                    R.string.add_type, typeName
+                )
             )
         }
     }

@@ -123,12 +123,14 @@ fun SummaryDisplay(
                             verticalAlignment = Alignment.Bottom
                         ) {
                             Text(
+                                maxLines = 1,
                                 text = "R$$mainValue",
                                 style = MaterialTheme.typography.displayMedium,
                                 color = Color.White
                             )
 
                             Text(
+                                maxLines = 1,
                                 text = ",$decimals",
                                 style = MaterialTheme.typography.headlineSmall,
                                 color = Color.Gray,
@@ -211,7 +213,7 @@ private fun SummaryItem(
                 ) else Color.Transparent,
                 MaterialTheme.shapes.medium
             )
-            .padding(vertical = 12.dp, horizontal = 16.dp),
+            .padding(  12.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
@@ -230,6 +232,7 @@ private fun SummaryItem(
         Spacer(modifier = Modifier.height(4.dp))
 
         Text(
+            maxLines = 1,
             text = "R$${
                 String.format(
                     Locale("pt", "BR"), "%,.2f", when (transactionType) {
