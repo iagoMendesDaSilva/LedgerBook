@@ -162,7 +162,6 @@ fun TransactionsScreenUI(
             if (categoryData.isNotEmpty()) {
                 Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                     CategoryPieChart(categoryData)
-                    CategoryLegend(categoryData)
                 }
             }
             Spacer(Modifier.height(15.dp))

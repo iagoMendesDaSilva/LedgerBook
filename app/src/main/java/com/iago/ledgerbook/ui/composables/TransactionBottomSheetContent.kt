@@ -225,7 +225,7 @@ fun CategoryItem(
 
         }
         Spacer(Modifier.height(10.dp))
-        Text(text = category.name, style = MaterialTheme.typography.labelMedium, color = labelColor)
+        Text(text = stringResource(category.title), style = MaterialTheme.typography.labelMedium, color = labelColor)
     }
 }
 
