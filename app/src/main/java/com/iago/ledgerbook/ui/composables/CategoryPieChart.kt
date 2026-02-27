@@ -123,13 +123,17 @@ fun CategoryLegend(
     data: Map<TransactionCategory, Double>,
     modifier: Modifier,
 ) {
+    val total = data.values.sum()
     Column(
         modifier,
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        data.entries.forEach { (category, amount) ->
+        data.entries.sortedByDescending { it.value }.forEach { (category, amount) ->
+            val percentage = if (total > 0) (amount / total * 100) else 0.0
             Row(
-                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.End
             ) {
                 Icon(
                     imageVector = category.icon,
@@ -141,8 +145,9 @@ fun CategoryLegend(
                 Text(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    text = stringResource(category.title),
+                    text = String.format(Locale("pt", "BR"), "%.1f%%", percentage),
                     style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }
@@ -155,9 +160,11 @@ fun CategoryLegendValues(
     modifier: Modifier
 ) {
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        data.entries.forEach { (category, amount) ->
+        data.entries.sortedByDescending { it.value }.forEach { (category, amount) ->
             Row(
+                modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Start
             ) {
                 Text(
                     maxLines = 1,
