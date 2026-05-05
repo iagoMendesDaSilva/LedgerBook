@@ -39,4 +39,6 @@
     <string name="health">Saúde</string>
     <string name="income_spent">GASTOS</string>
     <string name="income_saved">POUPADO</string>
+    <string name="fixed_mode">Modo Fixo</string>
+    <string name="monthly_mode">Modo Mensal</string>
 </resources>

@@ -7,6 +7,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.iago.ledgerbook.data.Transaction
+import kotlinx.coroutines.flow.Flow
 
 
 @Dao
@@ -16,7 +17,7 @@ interface TransactionDao {
     suspend fun getTransaction(id: Int): Transaction
 
     @Query("SELECT * FROM transactions")
-    suspend fun getTransactions(): List<Transaction>
+    fun getTransactions(): Flow<List<Transaction>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertTransaction(transaction: Transaction)

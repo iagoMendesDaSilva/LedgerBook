@@ -40,5 +40,7 @@
     <string name="health">Health</string>
     <string name="income_spent">SPENT</string>
     <string name="income_saved">SAVED</string>
+    <string name="fixed_mode">Fixed Mode</string>
+    <string name="monthly_mode">Monthly Mode</string>
 
 </resources>

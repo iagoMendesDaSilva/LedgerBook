@@ -3,6 +3,7 @@ package com.iago.ledgerbook.di
 import android.content.Context
 import androidx.room.Room
 import com.iago.ledgerbook.data.AppDatabase
+import com.iago.ledgerbook.data.MIGRATION_1_2
 import com.iago.ledgerbook.data.TransactionDao
 import dagger.Module
 import dagger.Provides
@@ -18,10 +19,10 @@ class AppModule {
     @Provides
     fun provideDatabase(@ApplicationContext context: Context): AppDatabase =
         Room.databaseBuilder(
-                context,
-                AppDatabase::class.java,
-                "ledgerbook_db"
-            ).fallbackToDestructiveMigration(false)
+            context,
+            AppDatabase::class.java,
+            "ledgerbook_db"
+        ).addMigrations(MIGRATION_1_2)
             .build()
 
     @Singleton
