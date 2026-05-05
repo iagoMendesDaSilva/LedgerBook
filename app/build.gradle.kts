@@ -14,8 +14,8 @@ android {
         applicationId = "com.iago.ledgerbook"
         minSdk = 27
         targetSdk = 36
-        versionCode = 6
-        versionName = "1.5"
+        versionCode = 8
+        versionName = "1.7"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
