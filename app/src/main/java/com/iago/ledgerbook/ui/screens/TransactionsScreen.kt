@@ -161,7 +161,13 @@ fun TransactionsScreenUI(
                         currentMonthYear = if (appMode.value == AppMode.MONTHLY)
                             String.format("%02d/%d", month, year)
                         else null,
-                        onToggle = { appMode.value = it }
+                        onToggle = { appMode.value = it },
+                        onReportClick ={
+                            showBottomSheet = BottomSheetAction.REPORT
+                            scope.launch {
+                                sheetState.bottomSheetState.expand()
+                            }
+                        }
                     )
 
                     SummaryDisplay(summaryData, currentScreen) {
@@ -237,43 +243,81 @@ fun TransactionsScreenUI(
         sheetPeekHeight = 0.dp,
         sheetSwipeEnabled = false,
         sheetContent = {
-            if (showBottomSheet != BottomSheetAction.CLOSE)
-                TransactionBottomSheetContent(
-                    type = currentScreen,
-                    isEditing = showBottomSheet == BottomSheetAction.EDIT,
-                    amount = editItem.value?.value,
-                    description = editItem.value?.title ?: "",
-                    selectedCategory = editItem.value?.category,
-                    onSubmit = { value, category, title ->
 
-                        if (showBottomSheet == BottomSheetAction.EDIT && editItem.value != null) {
-                            updateTransaction(
-                                editItem.value!!.copy(
-                                    category = category,
-                                    title = title,
-                                    value = value
-                                )
-                            )
-                        } else {
+            when (showBottomSheet) {
 
-                            val (currentMonth, currentYear) = getMonthFromIndex(visibleIndex)
-                            addTransaction(
-                                Transaction(
-                                    category = category,
-                                    title = title,
-                                    value = value,
-                                    type = currentScreen,
-                                    date = if (appMode.value == AppMode.MONTHLY)
-                                        getMillisFromMonthYear(currentMonth, currentYear)
-                                    else null
+                BottomSheetAction.CREATE,
+                BottomSheetAction.EDIT -> {
+
+                    TransactionBottomSheetContent(
+                        type = currentScreen,
+                        isEditing = showBottomSheet == BottomSheetAction.EDIT,
+                        amount = editItem.value?.value,
+                        description = editItem.value?.title ?: "",
+                        selectedCategory = editItem.value?.category,
+                        onSubmit = { value, category, title ->
+
+                            if (
+                                showBottomSheet == BottomSheetAction.EDIT &&
+                                editItem.value != null
+                            ) {
+
+                                updateTransaction(
+                                    editItem.value!!.copy(
+                                        category = category,
+                                        title = title,
+                                        value = value
+                                    )
                                 )
-                            )
+
+                            } else {
+
+                                val (currentMonth, currentYear) =
+                                    getMonthFromIndex(visibleIndex)
+
+                                addTransaction(
+                                    Transaction(
+                                        category = category,
+                                        title = title,
+                                        value = value,
+                                        type = currentScreen,
+                                        date = if (appMode.value == AppMode.MONTHLY)
+                                            getMillisFromMonthYear(
+                                                currentMonth,
+                                                currentYear
+                                            )
+                                        else null
+                                    )
+                                )
+                            }
+
+                            scope.launch {
+                                sheetState.bottomSheetState.hide()
+                            }
+
+                            showBottomSheet = BottomSheetAction.CLOSE
                         }
+                    )
+                }
 
-                        scope.launch { sheetState.bottomSheetState.hide() }
-                        showBottomSheet = BottomSheetAction.CLOSE
-                    }
-                )
+                BottomSheetAction.REPORT -> {
+
+                    MonthlyReportBottomSheet(
+                        item = generateMonthlyReport(
+                            transactions = transactions,
+                            currentMonth = currentMonth,
+                            currentYear = currentYear
+                        )
+                    )
+                }
+
+                BottomSheetAction.CLOSE -> {
+
+                    Box(
+                        modifier = Modifier.height(1.dp)
+                    )
+                }
+            }
         },
         content = {}
     )
@@ -308,6 +352,85 @@ fun TransactionsScreenUI(
             }
         )
     }
+}
+
+fun generateMonthlyReport(
+    transactions: List<Transaction>,
+    currentMonth: Int,
+    currentYear: Int
+): MonthlyReportItem {
+
+    val grouped = transactions
+        .filter { it.date != null }
+        .groupBy {
+
+            val cal = Calendar.getInstance().apply {
+                timeInMillis = it.date!!
+            }
+
+            Pair(
+                cal.get(Calendar.MONTH) + 1,
+                cal.get(Calendar.YEAR)
+            )
+        }
+        .toSortedMap(
+            compareBy<Pair<Int, Int>> { it.second }
+                .thenBy { it.first }
+        )
+
+    var accumulated = 0.0
+
+    grouped.forEach { (date, list) ->
+
+        var income = 0.0
+        var expense = 0.0
+        var saving = 0.0
+
+        list.forEach {
+
+            when (it.type) {
+
+                TransactionType.INCOME ->
+                    income += it.value
+
+                TransactionType.EXPENSE ->
+                    expense += it.value
+
+                TransactionType.SAVING ->
+                    saving += it.value
+            }
+        }
+
+        val balance = income - (expense + saving)
+
+        accumulated += balance
+
+        if (
+            date.first == currentMonth &&
+            date.second == currentYear
+        ) {
+
+            return MonthlyReportItem(
+                month = currentMonth,
+                year = currentYear,
+                income = income,
+                expense = expense,
+                saving = saving,
+                balance = balance,
+                accumulated = accumulated
+            )
+        }
+    }
+
+    return MonthlyReportItem(
+        month = currentMonth,
+        year = currentYear,
+        income = 0.0,
+        expense = 0.0,
+        saving = 0.0,
+        balance = 0.0,
+        accumulated = accumulated
+    )
 }
 
 fun getMillisFromMonthYear(month: Int, year: Int): Long {

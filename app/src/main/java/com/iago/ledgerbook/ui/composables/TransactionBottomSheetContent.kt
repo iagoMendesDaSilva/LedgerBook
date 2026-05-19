@@ -44,7 +44,8 @@ import com.iago.ledgerbook.ui.theme.LedgerBookTheme
 enum class BottomSheetAction {
     EDIT,
     CREATE,
-    CLOSE
+    CLOSE,
+    REPORT
 }
 
 @Composable

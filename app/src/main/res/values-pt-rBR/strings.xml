@@ -41,4 +41,15 @@
     <string name="income_saved">POUPADO</string>
     <string name="fixed_mode">Modo Fixo</string>
     <string name="monthly_mode">Modo Mensal</string>
+    <string name="financial_summary">Resumo Financeiro</string>
+    <string name="left_over">Sobrou neste mês</string>
+    <string name="missing">Faltou esse mês</string>
+    <string name="incomes">Entradas</string>
+    <string name="expenses">Saídas</string>
+    <string name="savings">Economias</string>
+    <string name="financial_history">Histórico financeiro</string>
+    <string name="monthly_report_positive_accumulated">Você trouxe R$ %1$s acumulados do mês anterior.</string>
+    <string name="monthly_report_negative_accumulated">Você veio com uma dívida acumulada de R$ %1$s do mês anterior.</string>
+    <string name="monthly_report_no_accumulated">Você começou este mês sem saldo acumulado.</string>
+    <string name="final_balance">Saldo final</string>
 </resources>

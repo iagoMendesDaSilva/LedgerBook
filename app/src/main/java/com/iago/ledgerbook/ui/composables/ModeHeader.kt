@@ -8,7 +8,9 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Assessment
 import androidx.compose.material.icons.filled.CurrencyExchange
+import androidx.compose.material.icons.outlined.Assessment
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,7 +25,8 @@ import com.iago.ledgerbook.ui.theme.LedgerBookTheme
 @Composable
 fun ModeHeader(
     currentMonthYear: String? = null,
-    onToggle: (AppMode) -> Unit
+    onToggle: (AppMode) -> Unit,
+    onReportClick: () -> Unit,
 ) {
     Row(
         Modifier.fillMaxWidth(),
@@ -37,19 +40,37 @@ fun ModeHeader(
             style = MaterialTheme.typography.body1
         )
 
-        IconButton(
-            onClick = {
-                onToggle(
-                    if (currentMonthYear == null) AppMode.MONTHLY
-                    else AppMode.FIXED
+        Row(
+            Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+         currentMonthYear?.let {
+             IconButton(
+                 onClick = onReportClick
+             ) {
+                 Icon(
+                     imageVector = Icons.Outlined.Assessment,
+                     contentDescription = null,
+                     tint = Color.White
+                 )
+             }
+         }
+
+            IconButton(
+                onClick = {
+                    onToggle(
+                        if (currentMonthYear == null) AppMode.MONTHLY
+                        else AppMode.FIXED
+                    )
+                }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.CurrencyExchange,
+                    contentDescription = null,
+                    tint = Color.White
                 )
             }
-        ) {
-            Icon(
-                imageVector = Icons.Default.CurrencyExchange,
-                contentDescription = null,
-                tint = Color.White
-            )
         }
     }
 }
@@ -59,7 +80,10 @@ fun ModeHeader(
 fun ModeHeaderPreview() {
     LedgerBookTheme {
         Surface {
-            ModeHeader() {}
+            ModeHeader(
+                currentMonthYear = null,
+                onToggle = {}
+            ) {}
         }
     }
 }

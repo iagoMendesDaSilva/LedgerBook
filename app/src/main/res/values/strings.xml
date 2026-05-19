@@ -42,5 +42,15 @@
     <string name="income_saved">SAVED</string>
     <string name="fixed_mode">Fixed Mode</string>
     <string name="monthly_mode">Monthly Mode</string>
-
+    <string name="financial_summary">Financial Summary</string>
+    <string name="left_over">There was some left over this month</string>
+    <string name="missing">There was something missing this month</string>
+    <string name="incomes">Incomes</string>
+    <string name="expenses">Expenses</string>
+    <string name="savings">Savings</string>
+    <string name="financial_history">Financial history</string>
+    <string name="monthly_report_positive_accumulated">You brought R$ %1$s accumulated from the previous month.</string>
+    <string name="monthly_report_negative_accumulated">You came with an accumulated debt of R$ %1$s from the previous month.</string>
+    <string name="monthly_report_no_accumulated">You started this month without accumulated balance.</string>
+    <string name="final_balance">Final balance</string>
 </resources>
